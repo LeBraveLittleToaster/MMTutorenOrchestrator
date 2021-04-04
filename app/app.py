@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 
 from dockerapi.DockerCon import DockerCon
 
@@ -7,7 +7,14 @@ app = Flask(__name__)
 dockerAPI = DockerCon("tcp://127.0.0.1:2375")
 
 
-@app.route('/')
+@app.route('/appwrite/event/start')
+def appwrite_start_server():
+    print("Got request")
+    print(str(request))
+    return "Got request"
+
+
+@app.route('/list/containers')
 def list_containers():
     return dockerAPI.list_container()
 
@@ -37,4 +44,4 @@ def end_all_sessions():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")
