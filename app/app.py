@@ -1,10 +1,31 @@
 from flask import Flask, request
-
+import json
 from dockerapi.DockerCon import DockerCon
 
 app = Flask(__name__)
 
 dockerAPI = DockerCon("tcp://127.0.0.1:2375")
+
+
+@app.route('/sync', methods=['POST'])
+def syncWithAppwrite():
+    """
+    Post data expected:
+
+    1. Refreshes current sessions
+    JSON {
+        "start" : ["session_id", ...],
+        "end" : ["session_id", ...]
+    }
+    2. Starting new session
+    :return: json {
+    "started_containers" : [ {"session_id" : "id", "container_id" : "id", "server_url" : "url"}, ...],
+    "absent_containers" : ["session_id", ...]}
+    """
+    print(json.loads(request.get_data()))
+    absent_containers = dockerAPI.updateList()
+    return "None"
+
 
 
 @app.route('/appwrite/event/start')

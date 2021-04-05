@@ -57,3 +57,17 @@ class DockerCon:
 
     def list_ports(self):
         return "offset: " + str(self.port_proxy.offset) + " " + str(self.port_proxy.occupiedPorts)
+
+    def updateList(self) -> [str]:
+        stoppedSessions = []
+        for session in self.sessions:
+            isIn = False
+            for container in self.client.containers.list():
+                if container.short_id == session.container_id:
+                    isIn = True
+                    break
+            if not isIn:
+                stoppedSessions.append(session)
+                self.sessions.remove(session)
+                self.port_proxy.free_port(session.proxy_port)
+        return stoppedSessions
